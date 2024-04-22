@@ -5,6 +5,8 @@
 #include <cmath>
 #include <random>
 #include <chrono>
+#include <algorithm>
+#include <cstring>
 
 typedef std::size_t HASH_INDEX_T;
 
@@ -19,14 +21,64 @@ struct MyStringHash {
     // hash function entry point (i.e. this is h(k))
     HASH_INDEX_T operator()(const std::string& k) const
     {
+
+
+        // array of 5 integers
+        unsigned long long w[5]; 
+        std::memset(w, 0, sizeof(w));  
+
+        // calculate hashes of all 0-5 subsets of letters
+        int cEnd = k.size(); 
+        int cIndex = 4; 
+        while(cEnd > 0) {
+          int cStart = std::max(0, cEnd - 6);
+          w[cIndex] = hash6(k.substr(cStart, cEnd - cStart)); 
+          cEnd -= 6; 
+          cIndex--;  
+        }
+
+        unsigned long long hash = 0; 
+        for(int i = 0; i < 5; i++) {
+          hash += rValues[i] * w[i]; 
+        }
+
+        return hash; 
+
         // Add your code here
 
 
     }
 
+    // k is now a maximum of 6 letters
+    unsigned long long hash6(const std::string& k) const {
+
+      // multiplication factor
+      unsigned long long m = 1; 
+      unsigned long long hash6 = 0; 
+
+      for(int index = k.size() - 1; index >= 0; index--) {
+        int val = letterDigitToNumber(k[index]); 
+        hash6 += val * m; 
+        m *= 36; 
+      }
+      
+
+      return hash6; 
+      
+    }
+
     // A likely helper function is to convert a-z,0-9 to an integral value 0-35
-    HASH_INDEX_T letterDigitToNumber(char letter) const
+    int letterDigitToNumber(char letter) const
     {
+
+        // upper case letters
+        if(letter >= 65 && letter <= 90) return letter - 65; 
+        // lower case letters
+        if(letter >= 97 && letter <= 122) return letter - 97;
+        // digits
+        return (letter - 48) + 26; 
+
+
         // Add code here or delete this helper function if you do not want it
 
     }

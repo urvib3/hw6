@@ -91,9 +91,34 @@ std::set<std::string> boggle(const std::set<std::string>& dict, const std::set<s
 	return result;
 }
 
+// returns true if a word along this path is found
+// so if a recursive call returns true, then the current word does not need to be recorded
 bool boggleHelper(const std::set<std::string>& dict, const std::set<std::string>& prefix, const std::vector<std::vector<char> >& board, 
 								   std::string word, std::set<std::string>& result, unsigned int r, unsigned int c, int dr, int dc)
 {
-//add your solution here!
+
+    // if r and c are out of bounds, return false
+    if(r >= board.size() || c >= board[0].size())
+      return false; 
+
+    word += board[r][c]; 
+    // base case: word is in dictionary and not in prefix dict
+    if(dict.count(word) && !prefix.count(word)) {
+      result.insert(word); 
+      return true; 
+    }
+
+    // dict and prefix contain word but longer word could not be found
+    if(dict.count(word) && prefix.count(word) && !boggleHelper(dict, prefix, board, word, result, r + dr, c + dc, dr, dc)) {
+      result.insert(word); 
+      return true; 
+    }
+
+    // word is only in prefix array
+    if(prefix.count(word)) {
+      return boggleHelper(dict, prefix, board, word, result, r + dr, c + dc, dr, dc); 
+    }
+
+    return false; 
 
 }
