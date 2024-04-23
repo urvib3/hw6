@@ -317,7 +317,7 @@ HashTable<K,V,Prober,Hash,KEqual>::~HashTable()
 {
 
   for(HASH_INDEX_T i = 0; i < table_.size(); i++)
-    if(table_[i]) delete table_[i]; 
+    if(table_[i] != nullptr) delete table_[i]; 
 
 }
 
@@ -364,10 +364,11 @@ void HashTable<K,V,Prober,Hash,KEqual>::insert(const ItemType& p)
 
   // make sure to update the item as not deleted if its the smaller
 
+
   else if(kequal_(p.first, table_[i]->item.first)) {
       table_[i]->item.second = p.second; 
-      if(table_[i]->deleted) n_ ++; 
-      table_[i]->deleted = false; 
+      // if(table_[i]->deleted) n_ ++; 
+      // table_[i]->deleted = false; 
   }
 
   // reportAll(std::cout); 
@@ -473,7 +474,7 @@ void HashTable<K,V,Prober,Hash,KEqual>::resize()
   mIndex_++; 
   n_ = 0; 
   usedSpots_ = 0; 
-  this->table_ = std::vector<HashItem*>(CAPACITIES[mIndex_]); 
+  this->table_ = std::vector<HashItem*>(CAPACITIES[mIndex_]);
 
   // reinsert all undeleted items from old hash table
   for(HASH_INDEX_T i = 0; i < copy.size(); i++) {
@@ -481,8 +482,7 @@ void HashTable<K,V,Prober,Hash,KEqual>::resize()
     if(copy[i] && !copy[i]->deleted)
       this->insert(copy[i]->item);
     // delete item if it is deleted
-    else if(copy[i] && copy[i]->deleted)
-      delete copy[i]; 
+    delete copy[i]; 
   }
 
    // std::cout << "after resize" << std::endl; 
